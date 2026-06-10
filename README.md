@@ -62,3 +62,29 @@ APP_HELP_DESK/
 │
 ├── home.php                 # Painel principal do sistema após autenticação bem-sucedida
 └── index.php                # Tela de Login (Ponto de entrada obrigatório da aplicação)
+```
+💾 4. Estrutura de Armazenamento (Persistência em Arquivo Plano)
+
+Toda a retenção de informações é efetuada no arquivo local database/arquivo.hd. O PHP utiliza ponteiros de arquivo (fopen, fwrite, feof, fgets) para manipular o arquivo de texto plano de forma direta.
+
+Cada registro é inserido em uma nova linha usando o separador hash (#), estruturado da seguinte forma:
+Plaintext
+
+ID_USUARIO # TÍTULO # CATEGORIA # DESCRIÇÃO # STATUS
+
+No momento da leitura, o backend em PHP usa a função explode('#', $linha) para quebrar o texto e convertê-lo em um array nativo, que é renderizado dinamicamente dentro da interface HTML.
+🧪 5. Plano de Testes de Software (Foco em Lógica PHP)
+Caso de Teste	Ação / Entrada	Resultado Esperado	Validação Lógica (Backend PHP)
+CT-01	Login com credenciais válidas.	Redirecionamento correto para a página home.php.	Validação de credenciais no array de usuários e criação de $_SESSION.
+CT-02	Tentativa de acesso direto à URL de uma tela interna sem estar autenticado.	Bloqueio imediato da página e redirecionamento para index.php?login=erro.	Checagem de isset($_SESSION['autenticado']) no arquivo auth.php.
+CT-03	Usuário do tipo Cliente tenta listar os chamados.	O loop while ignora linhas cujo ID_USUARIO seja diferente do ID guardado na sessão.	Filtro condicional if aplicado dentro da leitura do arquivo flat-file.
+CT-04	Usuário do tipo Cliente acessa a consulta.	O botão de "Encerrar Chamado" não é gerado no HTML.	Verificação de permissão usando if($_SESSION['perfil'] == 'admin').
+💻 6. Requisitos de Infraestrutura e Servidor
+
+Para executar esta aplicação puramente em PHP, os requisitos são mínimos:
+
+    Servidor Web Local: Apache HTTP Server (utilizando XAMPP, WAMP, Laragon ou o próprio servidor embutido do PHP).
+
+    Ambiente de Execução: PHP 8.1 ou superior.
+
+    Permissões de Escrita: O servidor local deve possuir permissão total de leitura e gravação na pasta database/ para que as funções do PHP consigam manipular o arquivo arquivo.hd sem gerar erros de permissão negada (Permission Denied).
