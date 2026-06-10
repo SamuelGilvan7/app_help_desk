@@ -63,28 +63,75 @@ APP_HELP_DESK/
 ├── home.php                 # Painel principal do sistema após autenticação bem-sucedida
 └── index.php                # Tela de Login (Ponto de entrada obrigatório da aplicação)
 ```
-💾 4. Estrutura de Armazenamento (Persistência em Arquivo Plano)
+# 💾 Estrutura de Armazenamento (Persistência em Arquivo Plano)
 
-Toda a retenção de informações é efetuada no arquivo local database/arquivo.hd. O PHP utiliza ponteiros de arquivo (fopen, fwrite, feof, fgets) para manipular o arquivo de texto plano de forma direta.
+A aplicação utiliza um modelo de persistência baseado em arquivo plano, armazenando os dados no arquivo:
 
-Cada registro é inserido em uma nova linha usando o separador hash (#), estruturado da seguinte forma:
-Plaintext
+```text
+database/arquivo.hd
+```
 
-ID_USUARIO # TÍTULO # CATEGORIA # DESCRIÇÃO # STATUS
+A manipulação dos dados é realizada através das funções nativas do PHP para leitura e escrita de arquivos, como:
 
-No momento da leitura, o backend em PHP usa a função explode('#', $linha) para quebrar o texto e convertê-lo em um array nativo, que é renderizado dinamicamente dentro da interface HTML.
-🧪 5. Plano de Testes de Software (Foco em Lógica PHP)
-Caso de Teste	Ação / Entrada	Resultado Esperado	Validação Lógica (Backend PHP)
-CT-01	Login com credenciais válidas.	Redirecionamento correto para a página home.php.	Validação de credenciais no array de usuários e criação de $_SESSION.
-CT-02	Tentativa de acesso direto à URL de uma tela interna sem estar autenticado.	Bloqueio imediato da página e redirecionamento para index.php?login=erro.	Checagem de isset($_SESSION['autenticado']) no arquivo auth.php.
-CT-03	Usuário do tipo Cliente tenta listar os chamados.	O loop while ignora linhas cujo ID_USUARIO seja diferente do ID guardado na sessão.	Filtro condicional if aplicado dentro da leitura do arquivo flat-file.
-CT-04	Usuário do tipo Cliente acessa a consulta.	O botão de "Encerrar Chamado" não é gerado no HTML.	Verificação de permissão usando if($_SESSION['perfil'] == 'admin').
-💻 6. Requisitos de Infraestrutura e Servidor
+* `fopen()`
+* `fwrite()`
+* `fgets()`
+* `feof()`
+* `fclose()`
 
-Para executar esta aplicação puramente em PHP, os requisitos são mínimos:
+Cada chamado é armazenado em uma nova linha do arquivo utilizando o caractere `#` como delimitador de campos.
 
-    Servidor Web Local: Apache HTTP Server (utilizando XAMPP, WAMP, Laragon ou o próprio servidor embutido do PHP).
+### Estrutura do Registro
 
-    Ambiente de Execução: PHP 8.1 ou superior.
+```text
+ID_USUARIO # TITULO # CATEGORIA # DESCRICAO # STATUS
+```
 
-    Permissões de Escrita: O servidor local deve possuir permissão total de leitura e gravação na pasta database/ para que as funções do PHP consigam manipular o arquivo arquivo.hd sem gerar erros de permissão negada (Permission Denied).
+### Exemplo
+
+```text
+2#Problema no Login#Suporte#Nao consigo acessar o sistema#Aberto
+```
+
+Durante a consulta dos chamados, cada linha é lida e convertida em um array através da função `explode()`, permitindo que os dados sejam processados e exibidos dinamicamente na interface da aplicação.
+
+---
+
+# 🧪 Plano de Testes
+
+Os testes foram definidos para validar as principais regras de negócio e mecanismos de segurança implementados no backend da aplicação.
+
+| ID    | Cenário de Teste                                  | Resultado Esperado                                          | Validação                                                     |
+| ----- | ------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------- |
+| CT-01 | Login com credenciais válidas                     | Usuário autenticado e redirecionado para `home.php`         | Verificação das credenciais e criação das variáveis de sessão |
+| CT-02 | Acesso direto a páginas internas sem autenticação | Bloqueio de acesso e redirecionamento para a tela de login  | Validação da existência da sessão de autenticação             |
+| CT-03 | Cliente acessando a listagem de chamados          | Exibição apenas dos chamados pertencentes ao usuário logado | Filtro realizado durante a leitura do arquivo                 |
+| CT-04 | Cliente acessando a consulta de chamados          | Opção de encerramento não deve ser exibida                  | Controle de permissões baseado no perfil do usuário           |
+
+---
+
+# 💻 Requisitos de Infraestrutura
+
+Para execução da aplicação são necessários os seguintes recursos:
+
+## Servidor Web
+
+* Apache HTTP Server
+* XAMPP
+* WAMP
+* Laragon
+* Servidor embutido do PHP
+
+## Ambiente de Execução
+
+* PHP 8.1 ou superior
+
+## Permissões de Arquivo
+
+O diretório `database/` deve possuir permissões de leitura e gravação para o servidor web, permitindo a manipulação do arquivo `arquivo.hd` sem erros de acesso ou escrita.
+
+## Banco de Dados
+
+Este projeto não utiliza banco de dados relacional.
+
+Toda a persistência é realizada através de arquivo plano, com leitura e gravação diretamente pelo PHP.
