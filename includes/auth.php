@@ -1,4 +1,6 @@
 <?php 
+session_start();
+
 if($_SERVER["REQUEST_METHOD"] === "POST"){
 
     $usuarios_app = array(
@@ -23,12 +25,20 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
         foreach( $usuarios_app as $login){
             if($login['email'] === $email && $login['senha'] === $senha) {
                 $autenticado = true;
-                break; 
+                break;
             }else{
                 header('Location:../index.php?erro=02');
             }
         }
-    
+
+        if($autenticado){
+            $_SESSION["auth"] = "YES"; 
+             header('Location:../home.php');
+        } else {
+            $_SESSION["auth"] = "NO";
+            header('Location:../index.php?erro=06');
+        }
+
     }
 }else {
     header('Location:../index.php?erro=01');

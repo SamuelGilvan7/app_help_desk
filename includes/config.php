@@ -1,0 +1,1 @@
+<?php  define('BASE_URL', '/app_help_desk'); ?>

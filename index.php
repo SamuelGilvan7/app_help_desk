@@ -1,10 +1,12 @@
 <?php 
+//Tratativas de erro
 $mensagens_erro = [
     '01' => 'Acesso negado. Por favor, faça login.',
     '02' => 'E-mail ou senha incorretos.',
     '03' => 'Preencha todos os campos obrigatórios.',
     '04' => 'O formato do e-mail digitado é inválido.',
-    '05' => 'Sessão expirada. Faça login novamente.'
+    '05' => 'Sessão expirada. Faça login novamente.',
+    '06' => 'Não autenticado!'
 ];
 
 $erro_cod = $_GET['erro'] ?? '';
@@ -86,5 +88,18 @@ $mensagem_exibir = $mensagens_erro[$erro_cod] ?? '';
 
     </div>
 
+<script>
+    setTimeout(() => {
+        const alerta = document.getElementById('alerta-erro');
+
+        if (alerta) {
+            alerta.classList.add('fade-out');
+
+            setTimeout(() => {
+                alerta.remove();
+            }, 1000);
+        }
+    }, 3000);
+</script>
 </body>
 </html>

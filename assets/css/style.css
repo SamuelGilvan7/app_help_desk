@@ -81,3 +81,12 @@
             color: #666;
             font-size: 15px;
         }
+
+        #alerta-erro {
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        #alerta-erro.fade-out {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
