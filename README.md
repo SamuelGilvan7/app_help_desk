@@ -97,17 +97,18 @@ Durante a consulta dos chamados, cada linha é lida e convertida em um array atr
 
 ---
 
-# 🧪 Plano de Testes
+## 🧪 5. Plano de Testes de Software (Foco em Lógica PHP)
 
-Os testes foram definidos para validar as principais regras de negócio e mecanismos de segurança implementados no backend da aplicação.
-
-| ID    | Cenário de Teste                                  | Resultado Esperado                                          | Validação                                                     |
-| ----- | ------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------- |
-| CT-01 | Login com credenciais válidas                     | Usuário autenticado e redirecionado para `home.php`         | Verificação das credenciais e criação das variáveis de sessão |
-| CT-02 | Acesso direto a páginas internas sem autenticação | Bloqueio de acesso e redirecionamento para a tela de login  | Validação da existência da sessão de autenticação             |
-| CT-03 | Cliente acessando a listagem de chamados          | Exibição apenas dos chamados pertencentes ao usuário logado | Filtro realizado durante a leitura do arquivo                 |
-| CT-04 | Cliente acessando a consulta de chamados          | Opção de encerramento não deve ser exibida                  | Controle de permissões baseado no perfil do usuário           |
-
+| Caso de Teste | Ação / Entrada | Resultado Esperado | Validação Lógica (Backend PHP) |
+| :---: | :--- | :--- | :--- |
+| **CT-01** | Login com credenciais válidas. | Redirecionamento correto para a página `home.php`. | Validação de credenciais no array de usuários e criação de `$_SESSION`. |
+| **CT-02** | Login com credenciais inválidas ou vazias. | Permanece na `index.php` exibindo mensagem de erro amigável. | Verificação de erro capturada via parâmetro `?login=erro` na URL. |
+| **CT-03** | Tentativa de acesso direto à URL de uma tela interna sem estar autenticado. | Bloqueio imediato da página e redirecionamento para login. | Checagem de `isset($_SESSION['autenticado'])` no arquivo `auth.php`. |
+| **CT-04** | Usuário do tipo Cliente tenta listar os chamados. | O loop `while` ignora linhas cujo `ID_USUARIO` seja diferente do ID logado. | Filtro condicional `if` aplicado dentro da leitura do arquivo flat-file. |
+| **CT-05** | Usuário tenta usar o caractere especial `#` nos campos de texto. | O sistema limpa ou substitui o caractere para evitar corrupção dos dados. | Uso de `str_replace()` antes de concatenar a linha e salvar no arquivo. |
+| **CT-06** | Usuário envia o formulário com o arquivo `arquivo.hd` inexistente. | O sistema cria o arquivo automaticamente em tempo de execução. | Parâmetro de abertura `'a'` na função nativa `fopen()`. |
+| **CT-07** | Usuário do tipo Cliente acessa a consulta de chamados. | O botão de "Encerrar Chamado" não é gerado no HTML. | Verificação de permissão usando `if($_SESSION['perfil'] == 'admin')`. |
+| **CT-08** | Usuário clica no botão de Logout. | Destruição completa dos dados guardados e redirecionamento seguro para o login. | Execução dos métodos `session_destroy()` e `header()` dentro de `logoff.php`. |
 ---
 
 # 💻 Requisitos de Infraestrutura
